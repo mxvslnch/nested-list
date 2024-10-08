@@ -1,35 +1,23 @@
 import { ListItem } from "../types/List";
-import { generateItemId } from "../utils/generateItemId";
+import { createNewListItem } from "../utils/createNewListItem";
 
 const MAX_NESTED_ITEMS = 3;
-const MAX_DEPTH = 1;
+const MAX_DEPTH = 4;
 
-export const generateListItem = (parentId = '', depth = 0): ListItem => {
-  const currentId = parentId ? `${parentId}-${generateItemId()}` : generateItemId();
+// Function for generating a list with nested items
+export const generateList = (numberOfItems = MAX_NESTED_ITEMS, maxDepth = MAX_DEPTH): ListItem[] => {
+  const generateListItem = (depth = 0, parentId = ''): ListItem => {
+    const item = createNewListItem(parentId);
 
-  const item: ListItem = {
-    id: currentId,
-    nestedItems: []
-  };
-
-  if (depth < MAX_DEPTH) {
-    const numberOfNestedItems = Math.floor(Math.random() * (MAX_NESTED_ITEMS + 1));
-
-    for (let i = 0; i < numberOfNestedItems; i++) {
-      item.nestedItems.push(generateListItem(currentId, depth + 1));  // Recursively generate nested items
+    if (depth < maxDepth) {
+      const numberOfNestedItems = Math.floor(Math.random() * MAX_NESTED_ITEMS); // 0 to 3 nested items
+      for (let i = 0; i < numberOfNestedItems; i++) {
+        item.nestedItems.push(generateListItem(depth + 1, item.id));
+      }
     }
-  }
 
-  return item;
-};
-
-const generateList = (numberOfItems = 3, maxDepth = 4): ListItem[] => {
-  const generateNestedItems = (depth: number, parentId: string): ListItem[] => {
-    const numberOfNestedItems = Math.floor(Math.random() * (MAX_NESTED_ITEMS + 1));
-    return Array.from({ length: numberOfNestedItems }, () => generateListItem(depth + 1, parentId));
+    return item;
   };
-
-
 
   return Array.from({ length: numberOfItems }, () => generateListItem());
 };

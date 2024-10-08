@@ -23,18 +23,22 @@ const ButtonWrapper = styled.div`
 
 export const Item: FC<Props> = memo(({ data, parent }) => {
   const { id, nestedItems } = data;
-  const { items, addItem } = useItemsStore();
+  const { items, addItem, removeItem } = useItemsStore();
 
   const handleAddItem = useCallback(() => {
     addItem(id);
-  }, [items, addItem, parent]);
+  }, [items, addItem, id]);
+
+  const handleRemoveItem = useCallback(() => {
+    removeItem(id)
+  }, [items, removeItem, id]);
 
   return (
     <Wrapper>
       <Card title={`Item #${id}`} parent={parent}>
         <ButtonWrapper>
           <Button onClick={handleAddItem} text={'Add child item'} />
-          {parent && <Button onClick={() => console.log(id)} text={'Delete'} />}
+          {parent && <Button onClick={handleRemoveItem} text={'Delete'} />}
         </ButtonWrapper>
       </Card>
 

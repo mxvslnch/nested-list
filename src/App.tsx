@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { List } from "./components/List";
 import { Layout } from "./components/UI/Layout";
 import { useItemsStore } from "./store/itemsStore";
-import { getList } from "./mockData/list";
 import { Loader } from "./components/UI/Loader";
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
-  const { items, fetchItems } = useItemsStore();
+  const { items, fetchItems, fetchingItems } = useItemsStore();
 
   useEffect(() => {
-    fetchItems()
+    fetchItems();
   }, []);
 
   return (
     <Layout>
-      {loading && <Loader />}
+      {fetchingItems && <Loader />}
       {items && <List items={items} />}
     </Layout>
   );

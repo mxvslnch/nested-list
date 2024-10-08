@@ -4,6 +4,7 @@ import { createNewListItem } from '../utils/createNewListItem';
 import { getList } from '../mockData/list';
 
 interface ItemsStore {
+  fetchingItems: boolean;
   items: ListItem[];
   fetchItems: () => void;
   addItem: (parentId?: string) => void;
@@ -11,6 +12,7 @@ interface ItemsStore {
 }
 
 export const useItemsStore = create<ItemsStore>((set, get) => ({
+  fetchingItems: true,
   items: [],
   fetchItems: async () => {
     try {
@@ -19,6 +21,8 @@ export const useItemsStore = create<ItemsStore>((set, get) => ({
       return;
     } catch (err) {
       throw new Error;
+    } finally {
+      set((state) => ({ ...state, fetchingItems: false }))
     }
   },
   addItem: (parentId?) => {
@@ -58,9 +62,23 @@ export const useItemsStore = create<ItemsStore>((set, get) => ({
     });
   },
   removeItem: (itemIdToDelete) => {
-    set((state) => ({
-      ...state,
-      items: state.items.filter((item) => item.id !== itemIdToDelete),
-    }))
-  }
+    set((state) => {
+      // Function to recursively remove the item with the matching ID
+      const removeItemRecursively = (items: ListItem[]): ListItem[] => {
+        return items
+          .filter(item => item.id !== itemIdToDelete) // Filter out the item if it matches
+          .map(item => ({
+            ...item,
+            // Recursively check and remove from nestedItems
+            nestedItems: removeItemRecursively(item.nestedItems),
+          }));
+      };
+
+      // Update the state with the filtered items
+      return {
+        ...state,
+        items: removeItemRecursively(state.items),
+      };
+    });
+  },
 }))
