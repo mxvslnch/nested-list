@@ -11,8 +11,8 @@ interface Props {
   parent?: ListItem['id'];
 }
 
-const Wrapper = styled.div`
-  padding-left: 60px;
+const Wrapper = styled.div < { $hasParent: boolean }> `
+  ${props => props.$hasParent && 'padding-left: 60px;'}
 `
 
 const ButtonWrapper = styled.div`
@@ -34,7 +34,7 @@ export const Item: FC<Props> = memo(({ data, parent }) => {
   }, [items, removeItem, id]);
 
   return (
-    <Wrapper>
+    <Wrapper $hasParent={Boolean(parent)}>
       <Card title={`Item #${id}`} parent={parent}>
         <ButtonWrapper>
           <Button onClick={handleAddItem} text={'Add child item'} />
